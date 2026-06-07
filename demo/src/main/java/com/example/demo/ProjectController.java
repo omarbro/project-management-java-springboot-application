@@ -13,6 +13,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.spi.CalendarNameProvider;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 @Controller
 public class ProjectController {
@@ -195,7 +199,7 @@ public class ProjectController {
          public String reportDate(){
             return "reportByDate";
          }
-         @GetMapping("/report/{format}")
+     /*    @GetMapping("/report/{format}")
          public String generateReport( @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
                                       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end, @PathVariable("format") String format, HttpSession session) throws FileNotFoundException, JRException {
              System.out.println(format);
@@ -229,9 +233,49 @@ public class ProjectController {
                 return "redirect:/login";
              }
 
+        } */
+
+@GetMapping("/report/{format}")
+        public ResponseEntity<byte[]> generateReport(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
+                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end, @PathVariable("format") String format, HttpSession session) throws JRException,FileNotFoundException {
+
+            if (session.getAttribute("userName") == null) {
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .header(HttpHeaders.LOCATION, "/login")
+                        .build();
+            }
+
+            List<Project> projects = projService.allProjects(start, end, start, end);
+            List<Report> reportProjects = new ArrayList<Report>();
+
+            for (Project project : projects) {
+                Report report = new Report();
+                report.setId(project.getId());
+                report.setProjectName(project.getProjectName());
+                report.setProjectIntro(project.getProjectIntro());
+                report.setStatus(project.getStatus());
+                report.setProjectOwner(project.getProjectOwner());
+                report.setStartDateTime(project.getStartDateTime());
+                report.setEndDateTime(project.getEndDateTime());
+
+                if (project.getProjectMembers() != null) {
+                    List<String> memberList = new ArrayList<String>();
+                    for (User member : project.getProjectMembers()) {
+                        memberList.add(member.getUserName());
+                    }
+                    report.setProjectMembers(memberList);
+                }
+
+                reportProjects.add(report);
+            }
+
+            byte[] pdfBytes = reportService.exportReport(reportProjects, format);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=projects.pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdfBytes);
         }
-
-
 
 
 }

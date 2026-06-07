@@ -19,6 +19,8 @@ public class ReportService {
     @Autowired
     private ProjectService projectService;
 
+/*
+
     public String exportReport(List<Report> report, String reportFormat) throws FileNotFoundException, JRException {
         String path="C:\\Users\\omar\\Documents";
 //        List<Project> projects=projectService.allProjects(start,end,start,end);
@@ -36,5 +38,22 @@ public class ReportService {
         }
 
         return "reportGenerated";
+    }*/
+   public byte[] exportReport(List<Report> report, String reportFormat) throws JRException,FileNotFoundException {
+        File file = ResourceUtils.getFile("classpath:projectReport.jrxml");
+
+        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(report);
+        Map<String, Object> parameters = new HashMap<>();
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+        if (reportFormat.equalsIgnoreCase("pdf")) {
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        }
+
+        return JasperExportManager.exportReportToPdf(jasperPrint);
     }
+
 }
+
+
