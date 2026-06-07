@@ -235,7 +235,7 @@ public class ProjectController {
 
         } */
 
-@GetMapping("/report/{format}")
+        @GetMapping("/report/{format}")
         public ResponseEntity<byte[]> generateReport(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end, @PathVariable("format") String format, HttpSession session) throws JRException,FileNotFoundException {
 
