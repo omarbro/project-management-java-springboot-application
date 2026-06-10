@@ -1,4 +1,5 @@
-package com.example.demo;
+package com.example.demo.service;
+import com.example.demo.model.Report;
 
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;

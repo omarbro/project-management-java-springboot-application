@@ -1,4 +1,10 @@
-package com.example.demo;
+package com.example.demo.controller;
+
+import com.example.demo.model.User;
+import com.example.demo.model.Project;
+
+import com.example.demo.service.UserService;
+import com.example.demo.service.ProjectService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

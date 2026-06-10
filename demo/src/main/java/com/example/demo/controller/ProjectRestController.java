@@ -1,4 +1,7 @@
-package com.example.demo;
+package com.example.demo.controller;
+import com.example.demo.model.Project;
+import com.example.demo.repository.ProjectRepository;
+import com.example.demo.service.ReportService;
 
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
