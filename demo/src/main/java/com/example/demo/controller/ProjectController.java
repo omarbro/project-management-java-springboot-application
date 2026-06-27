@@ -41,7 +41,7 @@ public class ProjectController {
     private ReportService reportService;
 
     @GetMapping("/projects")
-    public String showProjects(Model model,Project project,HttpSession session) throws ParseException {
+    public String showProjects(Model model,Project project) throws ParseException {
         Date startDate;
         Date endDate;
 
@@ -66,14 +66,14 @@ public class ProjectController {
 //                return err;
 //            }
 //            }
-        if(session.getAttribute("userName") != null) {
+//        if(session.getAttribute("userName") != null) {
             List<Project> projects = projService.allProjects(startDate, endDate, startDate, endDate);
             System.out.println(projects);
             model.addAttribute("projects", projects);
             return "projects";
-        }else {
-            return "redirect:/login";
-        }
+//        }else {
+//            return "redirect:/login";
+//        }
     }
 
 //    @GetMapping("/reportDate")
