@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.io.FileNotFoundException;
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -88,121 +89,97 @@ public class ProjectController {
 
     @GetMapping("/projectsFilter")
     public String projectsFilter(Model model, Project project, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
-                                 @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end, HttpSession session) throws ParseException{
+                                 @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end) throws ParseException{
 
-        if(session.getAttribute("userName") != null){
             List<Project> projects=projService.allProjects(start,end,start,end);
             System.out.println(projects);
             model.addAttribute("projects",projects);
             return "projects";
-        }else{
-            return "redirect:/login";
-        }
-
+    
     }
 
 
-        @GetMapping("/addProject")
-        public String showProjectAdd(HttpSession session){
-//            Project project=new Project();
-//            model.addAttribute("project", project);
+    @GetMapping("/addProject")
+    public String showProjectAdd(){
+        return "projectForm";
+    }
 
-            if(session.getAttribute("userName") != null){
-                return "projectForm";
-            }else{
-                return "redirect:/login";
-            }
+    @PostMapping("/addProject")
+    public String addProject(@ModelAttribute Project project, Principal principal, @RequestParam("member") List<String> memberList){
 
+        String userName=principal.getName();
+        project.setProjectOwner(userName);
+        List<User> userList=new ArrayList<User>();
+        for (String uname: memberList) {
+            User userMem=userService.findByUserName(uname);
+            userList.add(userMem);
         }
 
-        @PostMapping("/addProject")
-        public String addProject(@ModelAttribute Project project, HttpSession session, @RequestParam("member") List<String> memberList){
+        
+        project.setProjectMembers(userList);
+        projRepo.save(project);
+        return "welcome project";            
+    }
 
-            String userName=(String) session.getAttribute("userName");
-            System.out.println("asasasa----------");
-            project.setProjectOwner(userName);
-            System.out.println(project.getProjectOwner()+"this is get method");
-            List<User> userList=new ArrayList<User>();
-            for (String uname: memberList) {
-                User userMem=userService.findByUserName(uname);
-                userList.add(userMem);
-            }
+    @GetMapping("/editProject/{id}")
+    public String editUserPage(Model model, @PathVariable Long id){
+        Project project= projService.getProjectById(id);
+        model.addAttribute("project",project);
+        return "edit_project";
 
-            if(session.getAttribute("userName") != null){
-                project.setProjectMembers(userList);
-                projRepo.save(project);
-                return "welcome project";
-            }else{
-                return "redirect:/login";
-            }
+    }
 
+    @PostMapping("/updateProject")
+    public String updateProject(@ModelAttribute Project project, @RequestParam("member") List<String> memberList, Principal principal){
+        Project existProject= projService.getProjectById(project.getId());
+        if (existProject == null) {
+            return "redirect:/projects";
         }
-
-        @GetMapping("/editProject/{id}")
-        public String editUserPage(Model model, @PathVariable Long id, HttpSession session){
-            if(session.getAttribute("userName") != null){
-                Project project= projService.getProjectById(id);
-                model.addAttribute("project",project);
-                return "edit_project";
-            }else{
-                return "redirect:/login";
-            }
-
+        if (!existProject.getProjectOwner().equals(principal.getName())){
+            return "redirect:/projects";
         }
-
-        @PostMapping("/updateProject")
-        public String updateProject(@ModelAttribute Project project, @RequestParam("member") List<String> memberList , HttpSession session){
-            if(session.getAttribute("userName") != null){
-                System.out.println("bcsjhkdgc");
-                Project existProject= projService.getProjectById(project.getId());
-                System.out.println(existProject);
-
-                List<User> mList=new ArrayList<>();
-                for(String ul: memberList){
-                    User userL=userService.findByUserName(ul);
-                    mList.add(userL);
-                }
-                project.setProjectMembers(mList);
-
-                if(project.getProjectName() != null){
-                    existProject.setProjectName(project.getProjectName());
-                }
-                if(project.getProjectIntro() != null){
-                    existProject.setProjectIntro(project.getProjectIntro());
-                }
-                if(project.getStatus() != 0){
-                    existProject.setStatus(project.getStatus());
-                }
-                if(project.getStartDateTime() != null){
-                    existProject.setStartDateTime(project.getStartDateTime());
-                }
-                if(project.getEndDateTime() != null){
-                    existProject.setEndDateTime(project.getEndDateTime());
-                }
-                if(project.getProjectMembers() != null){
-                    existProject.setProjectMembers(project.getProjectMembers());
-                }
-                projRepo.save(existProject);
-
-                return "redirect:/projects";
-            }else{
-                return "redirect:/login";
+        if(!memberList.isEmpty()){
+            List<User> mList=new ArrayList<>();
+            for(String ul: memberList){
+                User userL=userService.findByUserName(ul);
+                mList.add(userL);
             }
-
+            existProject.setProjectMembers(mList);
         }
-         @GetMapping("deleteProject/{id}")
-         public String deleteProject(@PathVariable Long id,HttpSession session){
-             if(session.getAttribute("userName") != null){
-                 Project project= projService.getProjectById(id);
-                 projRepo.delete(project);
+        
+        if(project.getProjectName() != null){
+            existProject.setProjectName(project.getProjectName());
+        }
+        if(project.getProjectIntro() != null){
+            existProject.setProjectIntro(project.getProjectIntro());
+        }
+        if(project.getStatus() != 0){
+            existProject.setStatus(project.getStatus());
+        }
+        if(project.getStartDateTime() != null){
+            existProject.setStartDateTime(project.getStartDateTime());
+        }
+        if(project.getEndDateTime() != null){
+            existProject.setEndDateTime(project.getEndDateTime());
+        }
+        
+        projRepo.save(existProject);
+        return "redirect:/projects";
+    }
 
-                 return "redirect:/projects";
-             }else{
-                 return "redirect:/login";
-             }
-
-
-         }
+    @DeleteMapping("deleteProject/{id}")
+    public String deleteProject(@PathVariable Long id,Principal principal){
+        Project project= projService.getProjectById(id);
+        if (project == null ){
+            return "redirect:/projects";
+        }
+        if (!project.getProjectOwner().equals(principal.getName())){
+            return "redirect:/projects";
+        }
+        projRepo.delete(project);
+        return "redirect:/projects";
+    }
+        
          @GetMapping("/reportDate")
          public String reportDate(){
             return "reportByDate";
