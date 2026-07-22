@@ -85,8 +85,11 @@
                     </td>
                     <td>
                         <div class="d-flex justify-content-start">
-                            <a class="btn btn-outline-secondary me-3" th:if="${project.projectOwner == session.userName}" th:href="@{editProject/{id}(id=${project.id})}" role="button">Edit</a>
-                            <a class="btn btn-outline-secondary" th:if="${project.projectOwner == session.userName}" th:href="@{deleteProject/{id}(id=${project.id})}" role="button">Delete</a>
+                            <a class="btn btn-outline-secondary me-3" th:if="${project.projectOwner == #authentication?.name}" th:href="@{editProject/{id}(id=${project.id})}" role="button">Edit</a>
+                            <form th:if="${project.projectOwner == #authentication?.name}" th:action="@{/deleteProject/{id}(id=${project.id})}"
+                                method="post" onsubmit="return confirm('Delete this project?');" class="d-inline">
+                                <button type="submit" class="btn btn-outline-secondary">Delete</button>
+                            </form>
                         </div>
                     </td>
                 </tr>

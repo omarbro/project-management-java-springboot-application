@@ -167,7 +167,7 @@ public class ProjectController {
         return "redirect:/projects";
     }
 
-    @DeleteMapping("deleteProject/{id}")
+    @PostMapping("deleteProject/{id}")
     public String deleteProject(@PathVariable Long id,Principal principal){
         Project project= projService.getProjectById(id);
         if (project == null ){
@@ -180,10 +180,10 @@ public class ProjectController {
         return "redirect:/projects";
     }
         
-         @GetMapping("/reportDate")
-         public String reportDate(){
-            return "reportByDate";
-         }
+    @GetMapping("/reportDate")
+    public String reportDate() {
+        return "reportByDate";
+    }
      /*    @GetMapping("/report/{format}")
          public String generateReport( @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
                                       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end, @PathVariable("format") String format, HttpSession session) throws FileNotFoundException, JRException {
