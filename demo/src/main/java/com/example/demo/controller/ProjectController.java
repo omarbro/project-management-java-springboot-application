@@ -42,7 +42,7 @@ public class ProjectController {
     private ReportService reportService;
 
     @GetMapping("/projects")
-    public String showProjects(Model model,Project project) throws ParseException {
+    public String showProjects(Model model) throws ParseException {
         Date startDate;
         Date endDate;
 
@@ -88,7 +88,7 @@ public class ProjectController {
 //    }
 
     @GetMapping("/projectsFilter")
-    public String projectsFilter(Model model, Project project, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
+    public String projectsFilter(Model model, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
                                  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end) throws ParseException{
 
             List<Project> projects=projService.allProjects(start,end,start,end);
@@ -167,7 +167,7 @@ public class ProjectController {
         return "redirect:/projects";
     }
 
-    @PostMapping("deleteProject/{id}")
+    @PostMapping("/deleteProject/{id}")
     public String deleteProject(@PathVariable Long id,Principal principal){
         Project project= projService.getProjectById(id);
         if (project == null ){
