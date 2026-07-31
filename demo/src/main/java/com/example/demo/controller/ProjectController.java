@@ -222,13 +222,8 @@ public class ProjectController {
 
         @GetMapping("/report/{format}")
         public ResponseEntity<byte[]> generateReport(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
-                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end, @PathVariable("format") String format, HttpSession session) throws JRException,FileNotFoundException {
+                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end, @PathVariable("format") String format, Principal principal) throws JRException,FileNotFoundException {
 
-            if (session.getAttribute("userName") == null) {
-                return ResponseEntity.status(HttpStatus.FOUND)
-                        .header(HttpHeaders.LOCATION, "/login")
-                        .build();
-            }
 
             List<Project> projects = projService.allProjects(start, end, start, end);
             List<Report> reportProjects = new ArrayList<Report>();
