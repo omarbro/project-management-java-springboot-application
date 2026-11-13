@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,15 +13,9 @@ import javax.servlet.http.HttpSession;
 public class UserApiController {
 
     @GetMapping("/userdata/{id}")
-    public String getUserPage(@PathVariable("id") Integer userId, HttpSession session) {
-
-        if(session.getAttribute("userName") !=null ){
-
-        session.setAttribute("dataId", userId );
+    public String getUserPage(@PathVariable("id") Integer userId, Model model) {
+        model.addAttribute("dataId", userId);
         return "consumeApi";
-        }
-        else
-            return "redirect:/login";
     }
 
 }
