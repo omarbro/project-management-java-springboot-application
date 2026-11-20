@@ -4,7 +4,6 @@ import com.example.demo.config.SecurityConfig;
 import com.example.demo.model.Project;
 import com.example.demo.model.User;
 import com.example.demo.repository.ProjectRepository;
-import com.example.demo.service.ReportService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,9 +29,6 @@ class ProjectRestControllerTest {
 
     @MockBean
     private ProjectRepository projectRepository;
-
-    @MockBean
-    private ReportService reportService;   // old controller needs it; remove after the fix
 
     @Test
     @WithMockUser
