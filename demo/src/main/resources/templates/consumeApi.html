@@ -28,7 +28,7 @@
                 <a class="nav-link" href="/reportDate"><b>Report</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/logout"><b>Logout</b></a>
+                <form th:action="@{/logout}" method="post" class="d-inline"><button type="submit" class="btn btn-link nav-link"><b>Logout</b></button></form>
             </li>
 
         </ul>
@@ -37,7 +37,7 @@
 <!--<h1>dcvsdvdv</h1>-->
 <div class="container mt-3">
     <form method="POST">
-        <input type="hidden" name="data" th:value="${session.dataId}">
+        <input type="hidden" name="data" th:value="${dataId}">
 <!--        <button type="submit" class="btn btn-primary">Submit</button>-->
     </form>
     <div id="result" class="mt-3"></div>

@@ -27,7 +27,7 @@
                 <a class="nav-link" href="/reportDate"><b>Report</b></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/logout"><b>Logout</b></a>
+                <form th:action="@{/logout}" method="post" class="d-inline"><button type="submit" class="btn btn-link nav-link"><b>Logout</b></button></form>
             </li>
 
         </ul>

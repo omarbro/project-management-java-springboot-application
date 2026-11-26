@@ -28,20 +28,25 @@ public class LoginController {
     ProjectService projService;
 
     @GetMapping("/")
-    public String index(HttpSession session, Model model){
+     public String index(Model model){
         Date startDate;
         Date endDate;
 
-//        if(start == null || end == null){
-        Calendar calendar= Calendar.getInstance();
-        int curMonth=calendar.get(calendar.MONTH);
-        int curYear=calendar.get(calendar.YEAR);
-        calendar.set(Calendar.MONTH,curMonth);
-        calendar.set(Calendar.YEAR,curYear);
-        calendar.set(Calendar.DAY_OF_MONTH,1);
-        startDate=calendar.getTime();
+        Calendar calendar = Calendar.getInstance();
+        int curMonth = calendar.get(Calendar.MONTH);
+        int curYear = calendar.get(Calendar.YEAR);
+        calendar.set(Calendar.MONTH, curMonth);
+        calendar.set(Calendar.YEAR, curYear);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        startDate = calendar.getTime();
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        endDate=calendar.getTime();
+        endDate = calendar.getTime();
+
+        List<Project> projects = projService.allProjects(startDate, endDate, startDate, endDate);
+        model.addAttribute("projects", projects);
+        return "projects";
+    }
+
 //        }
 //        else{
 //            SimpleDateFormat dateFormat=new SimpleDateFormat("MM/dd/yyyy");
@@ -53,15 +58,14 @@ public class LoginController {
 //                return err;
 //            }
 //            }
-        if(session.getAttribute("userName") != null) {
+        /*if(session.getAttribute("userName") != null) {
             List<Project> projects = projService.allProjects(startDate, endDate, startDate, endDate);
             System.out.println(projects);
             model.addAttribute("projects", projects);
             return "projects";
         }else {
             return "redirect:/login";
-        }
-    }
+        } */
     @GetMapping("/login")
     public String showLoginForm (Model model){
         User user=new User();
@@ -69,7 +73,7 @@ public class LoginController {
         return "login";
     }
 
-    @PostMapping("/login")
+  /**   @PostMapping("/login")
     public String login(@ModelAttribute User user, Model model, HttpSession session){
         System.out.println(user.getEmail());
 //        if(user.getEmail().equals("email") && user.getPassword().equals("password")){
@@ -84,8 +88,8 @@ public class LoginController {
             return "welcome";
         }
         return "login";
-    }
-    @GetMapping("/logout")
+    } */
+    /*  @GetMapping("/logout")
     public String logout(HttpSession session){
         if(session.getAttribute("userName")!=null){
             session.invalidate();
@@ -94,6 +98,6 @@ public class LoginController {
         else{
             return "redirect:/login";
         }
-    }
+    }*/
 
 }
